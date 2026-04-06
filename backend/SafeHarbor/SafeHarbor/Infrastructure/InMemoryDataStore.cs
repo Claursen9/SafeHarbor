@@ -4,25 +4,10 @@ namespace SafeHarbor.Infrastructure;
 
 public sealed class InMemoryDataStore
 {
-    public List<Resident> Residents { get; } =
-    [
-        new Resident
-        {
-            FullName = "Alex Monroe",
-            DateOfBirth = new DateOnly(1994, 11, 22),
-            MedicalNotes = "Asthma inhaler required.",
-            CaseWorkerEmail = "caseworker@safeharbor.org"
-        }
-    ];
+    // NOTE: This store intentionally starts empty.
+    // TODO: Replace InMemoryDataStore with a database-backed repository once infrastructure is available.
+    public List<Resident> Residents { get; } = [];
 
-    public List<Donor> Donors { get; } =
-    [
-        new Donor
-        {
-            DisplayName = "Harbor Foundation",
-            Email = "finance@harborfoundation.org",
-            LifetimeDonations = 75_000m,
-            PaymentToken = "tok_live_demo_redacted_0001"
-        }
-    ];
+    // NOTE: Keep this collection empty so no synthetic financial records are mistaken for real donor data.
+    public List<Donor> Donors { get; } = [];
 }

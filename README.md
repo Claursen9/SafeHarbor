@@ -15,6 +15,12 @@ The project follows the architecture defined in `ARCHITECTURE_DECISION_RECORD.md
 
 ## Operations additions
 
+## Current development data mode
+
+- **No live database is wired in the current local build.**
+- Backend endpoints currently return empty placeholder payloads for database-backed modules, and write operations return `501 Not Implemented` until persistence is connected.
+- This prevents synthetic records from being mistaken for real resident or donor data while infrastructure work is still in progress.
+
 This repository now includes:
 
 - **CI pipeline** at `.github/workflows/ci.yml` (frontend lint/typecheck/tests/build + backend build/tests).

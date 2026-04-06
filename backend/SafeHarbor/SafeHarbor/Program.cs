@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SafeHarbor.Authorization;
-using SafeHarbor.Data;
 using SafeHarbor.Infrastructure;
 using SafeHarbor.Services;
 
@@ -28,9 +26,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(PolicyNames.AdminOnly, policy => policy.RequireRole("Admin"));
 });
 
-builder.Services.AddDbContext<SafeHarborDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SafeHarborDb")));
-
+// TODO: Register production database services when persistence integration is implemented.
 builder.Services.AddSingleton<InMemoryDataStore>();
 builder.Services.AddSingleton<IAuditLogger, AuditLogger>();
 builder.Services.AddSingleton<IDataRetentionRedactionService, DataRetentionRedactionService>();

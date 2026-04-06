@@ -1,92 +1,41 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SafeHarbor.Data;
 using SafeHarbor.DTOs;
-using SafeHarbor.Models.Entities;
 
 namespace SafeHarbor.Controllers.Admin;
 
 [ApiController]
 [Route("api/admin/process-recordings")]
 [Authorize]
-public sealed class ProcessRecordingController(SafeHarborDbContext dbContext) : ControllerBase
+public sealed class ProcessRecordingController : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PagedResult<ProcessRecordItem>>> GetByResidentCase(
-        [FromQuery] Guid residentCaseId,
-        [FromQuery] PagingQuery query,
-        CancellationToken cancellationToken)
+    public ActionResult<PagedResult<ProcessRecordItem>> GetByResidentCase([FromQuery] Guid residentCaseId, [FromQuery] PagingQuery query)
     {
-        var processQuery = dbContext.ProcessRecordings
-            .AsNoTracking()
-            .Where(x => x.ResidentCaseId == residentCaseId)
-            .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(query.Search))
-        {
-            processQuery = processQuery.Where(x => x.Summary.Contains(query.Search));
-        }
-
-        processQuery = query.Desc
-            ? processQuery.OrderByDescending(x => x.RecordedAt)
-            : processQuery.OrderBy(x => x.RecordedAt);
-
-        var totalCount = await processQuery.CountAsync(cancellationToken);
-        var page = query.NormalizedPage;
-        var pageSize = query.NormalizedPageSize;
-
-        var items = await processQuery
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new ProcessRecordItem(x.Id, x.ResidentCaseId, x.RecordedAt, x.Summary))
-            .ToArrayAsync(cancellationToken);
-
-        return Ok(new PagedResult<ProcessRecordItem>(items, page, pageSize, totalCount));
+        // TODO: Fetch process recordings from ICaseNarrativeStore when persistence is available.
+        // residentCaseId is intentionally kept in the contract so front-end integration does not change later.
+        _ = residentCaseId;
+        return Ok(new PagedResult<ProcessRecordItem>(Array.Empty<ProcessRecordItem>(), query.NormalizedPage, query.NormalizedPageSize, 0));
     }
 
-    // NOTE: Process-record writes are intentionally constrained to SocialWorker to enforce case-note stewardship.
     [HttpPost]
     [Authorize(Roles = "SocialWorker")]
-    public async Task<ActionResult<ProcessRecordItem>> Create([FromBody] CreateProcessRecordRequest request, CancellationToken cancellationToken)
+    public ActionResult<ProcessRecordItem> Create([FromBody] CreateProcessRecordRequest _)
     {
-        var record = new ProcessRecording
-        {
-            Id = Guid.NewGuid(),
-            ResidentCaseId = request.ResidentCaseId,
-            RecordedAt = request.RecordedAt ?? DateTimeOffset.UtcNow,
-            Summary = request.Summary
-        };
-
-        dbContext.ProcessRecordings.Add(record);
-        await dbContext.SaveChangesAsync(cancellationToken);
-        return CreatedAtAction(nameof(GetByResidentCase), new { residentCaseId = request.ResidentCaseId }, new ProcessRecordItem(record.Id, record.ResidentCaseId, record.RecordedAt, record.Summary));
+        return StatusCode(StatusCodes.Status501NotImplemented, "Process recording writes require database integration.");
     }
 
-    // NOTE: Role-based write control applies to updates and deletes for process recordings.
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "SocialWorker")]
-    public async Task<ActionResult<ProcessRecordItem>> Update(Guid id, [FromBody] CreateProcessRecordRequest request, CancellationToken cancellationToken)
+    public ActionResult<ProcessRecordItem> Update(Guid id, [FromBody] CreateProcessRecordRequest _)
     {
-        var record = await dbContext.ProcessRecordings.FirstOrDefaultAsync(x => x.Id == id, cancellationToken) ?? throw new KeyNotFoundException("Process record not found.");
-
-        record.ResidentCaseId = request.ResidentCaseId;
-        record.RecordedAt = request.RecordedAt ?? record.RecordedAt;
-        record.Summary = request.Summary;
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return Ok(new ProcessRecordItem(record.Id, record.ResidentCaseId, record.RecordedAt, record.Summary));
+        return StatusCode(StatusCodes.Status501NotImplemented, $"Process record {id} cannot be updated until database integration is complete.");
     }
 
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "SocialWorker")]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public IActionResult Delete(Guid id)
     {
-        var record = await dbContext.ProcessRecordings.FirstOrDefaultAsync(x => x.Id == id, cancellationToken) ?? throw new KeyNotFoundException("Process record not found.");
-
-        dbContext.ProcessRecordings.Remove(record);
-        await dbContext.SaveChangesAsync(cancellationToken);
-        return NoContent();
+        return StatusCode(StatusCodes.Status501NotImplemented, $"Process record {id} cannot be deleted until database integration is complete.");
     }
 }
