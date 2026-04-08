@@ -97,6 +97,37 @@ Data must be classified and handled according to sensitivity.
 - **Secrets management:** no secrets in source control; use managed secret store and environment-based configuration.
 - **Retention and purge:** define retention windows and secure deletion strategy by data class.
 
+### 6) Route and API authorization map
+
+To remove ambiguity between frontend route guards and backend authorization policies, we adopt an explicit default rule:
+
+- **Default rule:** pages and APIs are **not public** unless listed in the explicit public allowlist below.
+
+#### Frontend route map
+
+- **Public routes (no authentication required):**
+  - `/`
+  - `/impact`
+  - `/login`
+- **Authenticated-only route ("Your Donations"):**
+  - `/donor/dashboard`
+- **Staff/admin routes (all other non-public pages):**
+  - `/app/*`
+  - `/donate`
+  - `/privacy`
+  - Any route not in the public allowlist and not explicitly marked authenticated-only.
+
+#### Explicit decision on `/donor/dashboard`
+
+We are standardizing `/donor/dashboard` as **Donor-role-only** (not merely any authenticated user) to align with the current frontend route guards and avoid accidental access broadening. If the business later wants all authenticated users to view this page, that must be introduced as a follow-up ADR because it changes both UI guard intent and API authorization assumptions.
+
+#### Backend API role map
+
+- `/api/donor/*` → **authenticated user with Donor role** by default.
+  - NOTE: this can be relaxed to any authenticated user only by explicit endpoint-level decision and documentation.
+- `/api/admin/*` → **Admin + SocialWorker** baseline access.
+  - Endpoint-level narrowing is required where sensitivity is higher (for example Admin-only mutation endpoints).
+
 ## Consequences
 
 ### Positive
