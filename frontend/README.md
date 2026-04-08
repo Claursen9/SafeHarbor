@@ -1,5 +1,27 @@
 # React + TypeScript + Vite
 
+## Local auth setup
+
+The login page expects identity-provider environment variables in `frontend/.env.local`.
+Copy `frontend/.env.example` and fill in your tenant values:
+
+```bash
+cp .env.example .env.local
+```
+
+Required variables:
+
+- `VITE_AUTH_AUTHORIZE_URL`
+- `VITE_AUTH_CLIENT_ID`
+
+If you want full local end-to-end auth (without Entra tenant setup), use:
+
+- `VITE_AUTH_MODE=local`
+- `VITE_API_BASE_URL=http://localhost:5000` (or your backend local URL)
+
+In that mode, `/login` uses the backend local auth endpoint (`POST /api/auth/local-login`) to get a signed JWT for local testing. The backend switch is controlled by `LocalAuth:Enabled` in `backend/SafeHarbor/SafeHarbor/appsettings.Development.json`.
+
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
