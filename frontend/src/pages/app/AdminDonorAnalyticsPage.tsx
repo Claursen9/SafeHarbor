@@ -32,6 +32,17 @@ const VIEW_HEIGHT = 320
 const PLOT_W = VIEW_WIDTH  - CHART_PADDING.left - CHART_PADDING.right
 const PLOT_H = VIEW_HEIGHT - CHART_PADDING.top  - CHART_PADDING.bottom
 
+// NOTE: Keep chart colors aligned with global design tokens from index.css so
+// the analytics view stays visually consistent with public and donor pages.
+const CHART_COLORS = {
+  grid: 'var(--color-border)',
+  axisLabel: 'var(--color-subtle)',
+  areaFill: 'var(--color-secondary)',
+  line: 'var(--color-primary)',
+  pointHalo: 'var(--color-surface)',
+  pointMuted: 'var(--color-border)',
+}
+
 interface LineChartProps {
   /** 12-month trend data from the API. */
   data: DonorAnalyticsData['monthlyTrend']
@@ -101,7 +112,7 @@ function DonationLineChart({ data }: LineChartProps) {
               y1={y}
               x2={CHART_PADDING.left + PLOT_W}
               y2={y}
-              stroke="#d7dfec"
+              stroke={CHART_COLORS.grid}
               strokeWidth="1"
               strokeDasharray="4 4"
             />
@@ -111,7 +122,7 @@ function DonationLineChart({ data }: LineChartProps) {
               y={y + 4}
               textAnchor="end"
               fontSize="11"
-              fill="#4c5970"
+              fill={CHART_COLORS.axisLabel}
             >
               {formatCurrency(val)}
             </text>
@@ -120,13 +131,13 @@ function DonationLineChart({ data }: LineChartProps) {
       })}
 
       {/* ── Filled area under the line (light blue tint) ──────────────── */}
-      <path d={areaPath} fill="#dbe6ff" opacity="0.5" />
+      <path d={areaPath} fill={CHART_COLORS.areaFill} opacity="0.5" />
 
       {/* ── The line itself ────────────────────────────────────────────── */}
       <polyline
         points={polylinePoints}
         fill="none"
-        stroke="#2056d6"
+        stroke={CHART_COLORS.line}
         strokeWidth="2.5"
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -136,13 +147,13 @@ function DonationLineChart({ data }: LineChartProps) {
       {data.map((point, i) => (
         <g key={point.month}>
           {/* Outer white halo to make the dot pop off the line */}
-          <circle cx={xScale(i)} cy={yScale(point.amount)} r="6" fill="#ffffff" />
+          <circle cx={xScale(i)} cy={yScale(point.amount)} r="6" fill={CHART_COLORS.pointHalo} />
           {/* Colored dot */}
           <circle
             cx={xScale(i)}
             cy={yScale(point.amount)}
             r="4"
-            fill={point.amount > 0 ? '#2056d6' : '#d7dfec'}
+            fill={point.amount > 0 ? CHART_COLORS.line : CHART_COLORS.pointMuted}
           >
             {/* SVG title acts as a native tooltip on hover */}
             <title>{shortMonth(point.month)}: {formatCurrencyFull(point.amount)}</title>
@@ -158,7 +169,7 @@ function DonationLineChart({ data }: LineChartProps) {
           y={CHART_PADDING.top + PLOT_H + 20}
           textAnchor="middle"
           fontSize="11"
-          fill="#4c5970"
+          fill={CHART_COLORS.axisLabel}
         >
           {shortMonth(point.month)}
         </text>
@@ -170,7 +181,7 @@ function DonationLineChart({ data }: LineChartProps) {
         y1={CHART_PADDING.top + PLOT_H}
         x2={CHART_PADDING.left + PLOT_W}
         y2={CHART_PADDING.top + PLOT_H}
-        stroke="#d7dfec"
+        stroke={CHART_COLORS.grid}
         strokeWidth="1"
       />
     </svg>

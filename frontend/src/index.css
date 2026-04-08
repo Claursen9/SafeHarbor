@@ -1,13 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-  --color-bg: #f7f8fc;
+  --color-bg: #f8f5f1;
   --color-surface: #ffffff;
-  --color-text: #142034;
-  --color-subtle: #4c5970;
-  --color-border: #d7dfec;
-  --color-primary: #2056d6;
+  --color-text: #172535;
+  --color-subtle: #4d5a66;
+  --color-border: #d6dde2;
+  --color-primary: #2a5c5c;
   --color-primary-contrast: #ffffff;
-  --color-secondary: #edf2ff;
+  --color-secondary: #e9f3f3;
   --color-danger: #b42318;
+  --color-accent: #e8704a;
+  --color-accent-soft: #fff1ec;
+  --color-muted-track: #e3eaee;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -22,6 +27,7 @@
   --radius-lg: 1rem;
 
   --font-sans: Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
 }
 
 * {
@@ -31,6 +37,7 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
+  line-height: 1.55;
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -77,6 +84,9 @@ body {
 }
 
 .brand {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  letter-spacing: 0.01em;
   font-weight: 700;
 }
 
@@ -114,6 +124,7 @@ body {
 h1,
 h2,
 h3 {
+  font-family: var(--font-serif);
   line-height: 1.2;
   margin: 0 0 var(--space-4);
 }
@@ -153,6 +164,7 @@ ul {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
+  box-shadow: 0 10px 32px rgba(23, 37, 53, 0.06);
 }
 
 .cta-row {
@@ -218,7 +230,7 @@ ul {
   width: 100%;
   height: 0.8rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--color-primary) var(--bar-width, 0%), #dbe6ff 0);
+  background: linear-gradient(90deg, var(--color-primary) var(--bar-width, 0%), var(--color-muted-track) 0);
 }
 
 .stack-label-row {
@@ -227,7 +239,7 @@ ul {
 }
 
 .stack {
-  background: linear-gradient(90deg, #4c8dff var(--stack-width, 0%), #dbe6ff 0);
+  background: linear-gradient(90deg, var(--color-accent) var(--stack-width, 0%), var(--color-muted-track) 0);
 }
 
 .auth-layout {
@@ -333,8 +345,8 @@ select {
  * Visible to all users (visitors, donors, staff) so it's always accessible.
  * ─────────────────────────────────────────────────────────────────────────── */
 .nav-donate-button {
-  background: #e8704a;
-  color: #ffffff;
+  background: var(--color-accent);
+  color: var(--color-primary-contrast);
   border-radius: 9999px;
   padding: 0.4rem 1.1rem;
   font-weight: 700;
@@ -351,8 +363,8 @@ select {
 
 /* Hero "Donate Now" button on the homepage — orange to draw attention */
 .button-donate-hero {
-  background: #e8704a;
-  color: #ffffff;
+  background: var(--color-accent);
+  color: var(--color-primary-contrast);
   border-radius: 9999px;
   padding: var(--space-3) var(--space-6);
   font-weight: 700;
@@ -371,7 +383,7 @@ select {
  * ─────────────────────────────────────────────────────────────────────────── */
 .donate-page {
   --color-hero-bg:  #2a5c5c;
-  --color-cta:      #e8704a;
+  --color-cta:      var(--color-accent);
   --color-cta-contrast: #ffffff;
   max-width: 560px;     /* narrower than full page — form-friendly width */
   margin: 0 auto;
@@ -552,7 +564,7 @@ select {
 }
 
 .checkmark-circle {
-  stroke: #2a5c5c;        /* teal circle */
+  stroke: var(--color-primary);        /* teal circle */
   stroke-width: 3;
   /* Circumference of r=25 circle ≈ 157. Start fully hidden, animate to fully visible. */
   stroke-dasharray: 157;
@@ -565,7 +577,7 @@ select {
 }
 
 .checkmark-tick {
-  stroke: #e8704a;         /* orange tick */
+  stroke: var(--color-accent);         /* orange tick */
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -640,7 +652,7 @@ select {
  * ─────────────────────────────────────────────────────────────────────────── */
 .donor-dashboard-page {
   --color-hero-bg: #2a5c5c;
-  --color-cta: #e8704a;
+  --color-cta: var(--color-accent);
   --color-cta-contrast: #ffffff;
   /* 9999px is a common trick to guarantee pill shape on any height button */
   --radius-pill: 9999px;
