@@ -5,6 +5,7 @@ using SafeHarbor.DTOs;
 using SafeHarbor.Infrastructure;
 using SafeHarbor.Models;
 using SafeHarbor.Services;
+using SafeHarbor.Models.Entities;
 
 namespace SafeHarbor.Controllers.Admin;
 

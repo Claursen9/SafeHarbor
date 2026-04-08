@@ -1,6 +1,6 @@
 namespace SafeHarbor.Models.Entities;
 
-public class User : AuditableEntity
+public class UserProfile : AuditableEntity
 {
     public Guid Id { get; set; }
     public string ExternalId { get; set; } = string.Empty;

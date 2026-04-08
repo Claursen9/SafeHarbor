@@ -1,3 +1,4 @@
+using SafeHarbor.Models;
 using SafeHarbor.Models.Lookups;
 
 namespace SafeHarbor.Models.Entities;
@@ -6,7 +7,7 @@ public class ResidentCase : AuditableEntity
 {
     public Guid Id { get; set; }
     public Guid SafehouseId { get; set; }
-    public Guid? ResidentUserId { get; set; }
+    public Guid? ResidentId { get; set; }
     public int CaseCategoryId { get; set; }
     public int? CaseSubcategoryId { get; set; }
     public int StatusStateId { get; set; }
@@ -14,7 +15,7 @@ public class ResidentCase : AuditableEntity
     public DateTimeOffset? ClosedAt { get; set; }
 
     public Safehouse? Safehouse { get; set; }
-    public User? ResidentUser { get; set; }
+    public Resident? Resident { get; set; }
     public CaseCategory? CaseCategory { get; set; }
     public CaseSubcategory? CaseSubcategory { get; set; }
     public StatusState? StatusState { get; set; }

@@ -1,16 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore; 
 using Microsoft.Identity.Web;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SafeHarbor.Authorization;
+using SafeHarbor.Data; 
 using SafeHarbor.Infrastructure;
 using SafeHarbor.Services;
 using SafeHarbor.Services.DonorImpact;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// NOTE: JSON console formatting keeps logs structured for Azure Log Analytics and App Insights queries.
+// Logging configuration
 builder.Logging.ClearProviders();
 builder.Logging.AddJsonConsole(options =>
 {
@@ -18,10 +20,15 @@ builder.Logging.AddJsonConsole(options =>
     options.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 });
 
+// --- DATABASE REGISTRATION START ---
+// Updated to use PostgreSQL (Npgsql) instead of SQL Server
+builder.Services.AddDbContext<SafeHarborDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// --- DATABASE REGISTRATION END ---
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
-// NOTE: Policy names are centralized so controllers can enforce consistent role semantics.
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(PolicyNames.AdminOnly, policy => policy.RequireRole("Admin"));
@@ -32,6 +39,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(PolicyNames.DonorOnly, policy => policy.RequireRole("Donor"));
 });
 
+// CORS Configuration
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -43,9 +51,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-// TODO: Register production database services when persistence integration is implemented.
-builder.Services.AddSingleton<InMemoryDataStore>();
-builder.Services.AddSingleton<IAuditLogger, AuditLogger>();
+// Services Registration
+builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddSingleton<IDataRetentionRedactionService, DataRetentionRedactionService>();
 
 // Donor impact calculator — used by DonorDashboardController to compute "girls helped" metric.
@@ -56,7 +63,7 @@ builder.Services.AddSingleton<IDonorImpactCalculator, RuleBasedImpactCalculator>
 // NOTE: Live/ready probes support platform health checks and safer blue/green swaps.
 builder.Services.AddHealthChecks();
 
-// NOTE: Baseline telemetry is enabled with OTLP export so staging dashboards can read traces and metrics.
+// Telemetry configuration
 var telemetryServiceName = builder.Configuration["Telemetry:ServiceName"] ?? "safeharbor-api";
 var otlpEndpoint = builder.Configuration["Telemetry:OtlpEndpoint"];
 
@@ -67,6 +74,7 @@ builder.Services.AddOpenTelemetry()
         tracing
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation();
+            //.AddEntityFrameworkCoreInstrumentation(); // Enabled this to help you debug DB queries!
 
         if (!string.IsNullOrWhiteSpace(otlpEndpoint))
         {
