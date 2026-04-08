@@ -327,3 +327,395 @@ select {
     align-items: stretch;
   }
 }
+
+/* ── Navbar Donate Now button ────────────────────────────────────────────────
+ * Styled as an orange pill, distinct from the plain text nav links.
+ * Visible to all users (visitors, donors, staff) so it's always accessible.
+ * ─────────────────────────────────────────────────────────────────────────── */
+.nav-donate-button {
+  background: #e8704a;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 0.4rem 1.1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: none;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.nav-donate-button:hover {
+  opacity: 0.88;
+  color: #ffffff;
+}
+
+/* Hero "Donate Now" button on the homepage — orange to draw attention */
+.button-donate-hero {
+  background: #e8704a;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: var(--space-3) var(--space-6);
+  font-weight: 700;
+  border: none;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.button-donate-hero:hover {
+  opacity: 0.88;
+}
+
+/* ── Donation Page ────────────────────────────────────────────────────────────
+ * Scoped custom properties (same teal/orange palette as the donor dashboard)
+ * applied to the .donate-page wrapper so staff pages are unaffected.
+ * ─────────────────────────────────────────────────────────────────────────── */
+.donate-page {
+  --color-hero-bg:  #2a5c5c;
+  --color-cta:      #e8704a;
+  --color-cta-contrast: #ffffff;
+  max-width: 560px;     /* narrower than full page — form-friendly width */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Teal hero section at the top of the donation page */
+.donate-hero {
+  background: var(--color-hero-bg);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-6);
+  text-align: center;
+}
+
+.donate-hero h1,
+.donate-hero p {
+  color: #ffffff;
+}
+
+/* White card wrapping each form step */
+.donate-form-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* "STEP 1 — Choose your gift amount" label */
+.donate-step-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-subtle);
+  margin-bottom: var(--space-1);
+}
+
+/* Row container for side-by-side inputs (State + ZIP, Expiry + CVV) */
+.donate-field-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+/* "$" prefix + amount input row */
+.donate-amount-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.donate-currency-prefix {
+  font-weight: 600;
+  color: var(--color-subtle);
+}
+
+/* Field-level validation error message */
+.donate-field-error {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  margin-top: 0;
+}
+
+/* Submit button section */
+.donate-submit-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding-bottom: var(--space-8);
+}
+
+/* Orange pill submit button (reuses donor CTA pattern) */
+.donate-cta-button {
+  background: var(--color-cta, #e8704a);
+  color: var(--color-cta-contrast, #ffffff);
+  border-radius: 9999px;
+  padding: var(--space-4) var(--space-6);
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.donate-cta-button:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.donate-cta-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Celebration Screen ───────────────────────────────────────────────────────
+ * Shown after a successful (simulated) donation submission.
+ * Confetti pieces fall from the top; the success card scales in from slightly below.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* Wrapper: positions confetti absolutely above the card */
+.donate-celebration-wrapper {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  overflow: hidden;
+}
+
+/* The actual success card */
+.donate-celebration {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  /* Spring scale-in animation */
+  animation: celebration-card-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes celebration-card-in {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Confetti overlay — pointer-events: none so it doesn't block clicks */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Individual confetti square */
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  border-radius: 2px;
+  animation: confetti-fall 2.2s ease-in forwards;
+  opacity: 0;
+}
+
+/* Confetti falls down, rotates, and fades out */
+@keyframes confetti-fall {
+  0%   { transform: translateY(0)    rotate(0deg);   opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Animated SVG Checkmark ──────────────────────────────────────────────────
+ * A circle draws itself, then a tick draws itself.
+ * Uses stroke-dashoffset animation — the stroke length is set to match the path
+ * circumference so it "writes" the shape from start to end.
+ * ─────────────────────────────────────────────────────────────────────────── */
+.checkmark-svg {
+  width: 72px;
+  height: 72px;
+  display: block;
+  margin: 0 auto var(--space-4);
+}
+
+.checkmark-circle {
+  stroke: #2a5c5c;        /* teal circle */
+  stroke-width: 3;
+  /* Circumference of r=25 circle ≈ 157. Start fully hidden, animate to fully visible. */
+  stroke-dasharray: 157;
+  stroke-dashoffset: 157;
+  animation: draw-circle 0.5s ease forwards 0.1s;
+}
+
+@keyframes draw-circle {
+  to { stroke-dashoffset: 0; }
+}
+
+.checkmark-tick {
+  stroke: #e8704a;         /* orange tick */
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Path length ≈ 34. Start hidden, draw after circle finishes. */
+  stroke-dasharray: 34;
+  stroke-dashoffset: 34;
+  animation: draw-tick 0.35s ease forwards 0.55s;
+}
+
+@keyframes draw-tick {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── Admin Donor Analytics Layout ───────────────────────────────────────────
+ * Two-column dashboard: fixed-width left sidebar for KPIs + lists,
+ * flexible right column for the SVG line chart.
+ *
+ * The left sidebar scrolls independently when its content is taller than the
+ * right-column chart; sticky positioning keeps the chart visible on tall screens.
+ * ─────────────────────────────────────────────────────────────────────────── */
+.donor-analytics-layout {
+  display: grid;
+  /* Left column: fixed 280px sidebar; right column: takes remaining space */
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-6);
+  align-items: start;
+  margin-top: var(--space-6);
+}
+
+.donor-analytics-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Sticky right-column chart: stays in view while the left sidebar scrolls */
+.donor-line-chart-card {
+  position: sticky;
+  top: var(--space-4);
+}
+
+/* SVG fills the full card width, height scales proportionally with viewBox */
+.donor-line-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Allow SVG content (e.g. axis labels) to paint outside the bounding box */
+  overflow: visible;
+  margin-top: var(--space-4);
+}
+
+/* Responsive: stack sidebar above chart on narrow screens */
+@media (max-width: 900px) {
+  .donor-analytics-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .donor-line-chart-card {
+    position: static; /* remove sticky on small screens so it doesn't overlap */
+  }
+}
+
+/* ── Donor Dashboard Theme ───────────────────────────────────────────────────
+ * All styles below are scoped to .donor-dashboard-page so they never bleed
+ * into staff pages. The custom properties override the global tokens only
+ * within the donor dashboard route (/donor/dashboard).
+ *
+ * Color palette (matches the site's brand screenshot):
+ *   --color-hero-bg  : Deep teal used for the hero section background
+ *   --color-cta      : Orange/coral used for CTA buttons and selected presets
+ *   --radius-pill    : Fully rounded corners for pill-shaped buttons
+ * ─────────────────────────────────────────────────────────────────────────── */
+.donor-dashboard-page {
+  --color-hero-bg: #2a5c5c;
+  --color-cta: #e8704a;
+  --color-cta-contrast: #ffffff;
+  /* 9999px is a common trick to guarantee pill shape on any height button */
+  --radius-pill: 9999px;
+}
+
+/* Hero section — teal background with white text, rounded card shape */
+.donor-hero-section {
+  background: var(--color-hero-bg);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+/* All text inside the hero section is white to stay legible on the dark background */
+.donor-hero-section h1,
+.donor-hero-section p {
+  color: #ffffff;
+}
+
+/* Orange pill CTA button used for "Donate Now" and any other donor actions */
+.donor-cta-button {
+  background: var(--color-cta);
+  color: var(--color-cta-contrast);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-6);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.donor-cta-button:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.donor-cta-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Container for the preset amount quick-select buttons */
+.donor-amount-presets {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+/* Individual preset amount button — pill shape, unselected state */
+.donor-amount-btn {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+/* Selected preset — fills with orange to match the CTA button style */
+.donor-amount-btn.selected {
+  border-color: var(--color-cta);
+  background: var(--color-cta);
+  color: var(--color-cta-contrast);
+}
+
+.donor-amount-btn:hover:not(.selected) {
+  border-color: var(--color-cta);
+}
+
+/* Impact metric card — the large number uses the teal hero color for visual weight */
+.donor-impact-card .metric-value {
+  font-size: 3rem;
+  color: var(--color-hero-bg);
+  line-height: 1.1;
+}

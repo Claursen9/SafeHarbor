@@ -3,6 +3,13 @@ using SafeHarbor.Models.Entities;
 
 namespace SafeHarbor.Infrastructure;
 
+/// <summary>
+/// In-memory data store used during local development and testing.
+/// All collections start empty; call DonorDashboardSeeder.Seed() in Program.cs
+/// to populate with test data for the donor dashboard.
+///
+/// TODO: Replace with Entity Framework + PostgreSQL once infrastructure is available.
+/// </summary>
 public sealed class InMemoryDataStore
 {
     // NOTE: This store intentionally starts empty.
@@ -10,5 +17,12 @@ public sealed class InMemoryDataStore
     public List<Resident> Residents { get; } = [];
 
     // NOTE: Keep this collection empty so no synthetic financial records are mistaken for real donor data.
-    public List<Donor> Donors { get; } = [];
+    // Seeding is done explicitly via DonorDashboardSeeder, not here.
+    public List<Models.Donor> Donors { get; } = [];
+
+    /// <summary>Fundraising campaigns. Populated by DonorDashboardSeeder at startup.</summary>
+    public List<Campaign> Campaigns { get; } = [];
+
+    /// <summary>Individual donation records. Populated by DonorDashboardSeeder and by POST /api/donor/contribution.</summary>
+    public List<Contribution> Contributions { get; } = [];
 }

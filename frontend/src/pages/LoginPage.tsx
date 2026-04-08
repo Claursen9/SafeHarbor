@@ -8,7 +8,9 @@ export function LoginPage() {
   const location = useLocation()
   const { login } = useAuth()
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState<AppRole>('Viewer')
+  // Default to Admin since that's the most common staff use-case in development.
+  // Donors should select the "Donor" role to be redirected to /donor/dashboard.
+  const [role, setRole] = useState<AppRole>('Admin')
   const [error, setError] = useState<string | null>(null)
 
   const handleCredentialsSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -20,15 +22,20 @@ export function LoginPage() {
     }
 
     login(email.trim(), role)
+
+    // Redirect based on role: donors go to their personal dashboard,
+    // staff go to the admin dashboard (or wherever they were trying to reach).
     const destination = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
-    navigate(destination ?? '/app/dashboard', { replace: true })
+    const defaultDestination = role === 'Donor' ? '/donor/dashboard' : '/app/dashboard'
+    navigate(destination ?? defaultDestination, { replace: true })
   }
 
   return (
     <section aria-labelledby="login-title" className="auth-layout">
       <div className="auth-card">
-        <h1 id="login-title">Team login</h1>
-        <p className="caption">Use your work identity to access authenticated operational modules.</p>
+        <h1 id="login-title">Sign in</h1>
+        {/* Staff: select Admin or SocialWorker. Donors: select Donor to reach your giving dashboard. */}
+        <p className="caption">Select your role to access your dashboard.</p>
 
         {error && (
           <p className="form-error" role="alert">

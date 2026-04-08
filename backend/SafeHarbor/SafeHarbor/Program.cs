@@ -8,6 +8,7 @@ using SafeHarbor.Authorization;
 using SafeHarbor.Data; 
 using SafeHarbor.Infrastructure;
 using SafeHarbor.Services;
+using SafeHarbor.Services.DonorImpact;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(PolicyNames.AdminOnly, policy => policy.RequireRole("Admin"));
+
+    // DonorOnly restricts donor dashboard endpoints to users with the "Donor" role.
+    // Currently the donor controller uses [AllowAnonymous] for local dev; this policy
+    // will be enforced once Entra ID authentication is fully wired.
+    options.AddPolicy(PolicyNames.DonorOnly, policy => policy.RequireRole("Donor"));
 });
 
 // CORS Configuration
@@ -49,9 +55,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddSingleton<IDataRetentionRedactionService, DataRetentionRedactionService>();
 
-// If you are transitioning fully to the database, you might eventually remove this:
-builder.Services.AddScoped<InMemoryDataStore>(); 
+// Donor impact calculator — used by DonorDashboardController to compute "girls helped" metric.
+// TO SWAP IN AN ML MODEL: replace RuleBasedImpactCalculator with your MlImpactCalculator class here.
+// The controller and frontend are unaffected by this change.
+builder.Services.AddSingleton<IDonorImpactCalculator, RuleBasedImpactCalculator>();
 
+// NOTE: Live/ready probes support platform health checks and safer blue/green swaps.
 builder.Services.AddHealthChecks();
 
 // Telemetry configuration
@@ -89,6 +98,12 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Seed the in-memory store with test donors, a campaign, and contribution history.
+// This allows the donor dashboard to render immediately without a real database.
+// See Infrastructure/DonorDashboardSeeder.cs for test credentials and amounts.
+// TODO: Remove once a real database with migration seeds is in place.
+DonorDashboardSeeder.Seed(app.Services.GetRequiredService<InMemoryDataStore>());
 
 if (app.Environment.IsDevelopment())
 {

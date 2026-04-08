@@ -10,18 +10,20 @@ export function HomePage() {
   return (
     <section aria-labelledby="home-title">
       <div className="hero-card">
-        <p className="eyebrow">Safe Harbor Platform</p>
-        <h1 id="home-title">Support informed, privacy-first intervention at scale.</h1>
+        <p className="eyebrow">501(c)(3) Nonprofit Organization</p>
+        <h1 id="home-title">Every Girl Deserves a Safe Harbor</h1>
         <p className="lead">
-          Safe Harbor helps partner organizations coordinate care pathways while keeping
-          person-level details protected.
+          SafeHarbor International provides rescue, rehabilitation, and reintegration
+          for girls who are survivors of sexual abuse and trafficking — because healing
+          is possible.
         </p>
         <div className="cta-row">
-          <Link to="/impact" className="button button-primary">
-            View impact dashboard
+          {/* Primary CTA: donate now — the most important action for visitors */}
+          <Link to="/donate" className="button button-donate-hero">
+            Donate Now →
           </Link>
-          <Link to="/login" className="button button-secondary">
-            Team login
+          <Link to="/impact" className="button button-secondary">
+            Stories of Hope
           </Link>
         </div>
       </div>

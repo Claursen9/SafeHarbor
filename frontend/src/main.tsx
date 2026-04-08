@@ -15,6 +15,9 @@ import { CaseloadInventoryPage } from './pages/app/CaseloadInventoryPage'
 import { ProcessRecordingPage } from './pages/app/ProcessRecordingPage'
 import { HomeVisitationConferencesPage } from './pages/app/HomeVisitationConferencesPage'
 import { ReportsAnalyticsPage } from './pages/app/ReportsAnalyticsPage'
+import { YourDonationsPage } from './pages/donor/YourDonationsPage'
+import { AdminDonorAnalyticsPage } from './pages/app/AdminDonorAnalyticsPage'
+import { DonatePage } from './pages/DonatePage'
 
 const router = createBrowserRouter([
   {
@@ -25,12 +28,16 @@ const router = createBrowserRouter([
       { path: 'impact', element: <ImpactDashboardPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
+      // Public donation page — accessible to visitors and logged-in users alike.
+      { path: 'donate', element: <DonatePage /> },
       {
         path: 'app',
-        element: <ProtectedRoute />,
+        // Restrict /app/* to staff roles only. Donors are redirected to / if they try to visit staff routes.
+        element: <ProtectedRoute allowedRoles={['Admin', 'SocialWorker']} />,
         children: [
           { path: 'dashboard', element: <AdminDashboardPage /> },
           { path: 'donors', element: <DonorsContributionsPage /> },
+          { path: 'donor-analytics', element: <AdminDonorAnalyticsPage /> },
           { path: 'caseload', element: <CaseloadInventoryPage /> },
           {
             path: 'process-recording',
@@ -39,6 +46,17 @@ const router = createBrowserRouter([
           },
           { path: 'visitation-conferences', element: <HomeVisitationConferencesPage /> },
           { path: 'reports', element: <ReportsAnalyticsPage /> },
+        ],
+      },
+
+      // Donor-only route tree.
+      // Uses allowedRoles={['Donor']} so only donors can access /donor/*.
+      // Staff visiting /donor/dashboard are redirected to /login.
+      {
+        path: 'donor',
+        element: <ProtectedRoute allowedRoles={['Donor']} />,
+        children: [
+          { path: 'dashboard', element: <YourDonationsPage /> },
         ],
       },
     ],
