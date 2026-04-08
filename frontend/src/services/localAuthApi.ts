@@ -35,7 +35,7 @@ async function readApiError(response: Response, fallbackMessage: string): Promis
 
 async function postLocalAuthJson(endpoint: string, payload: object): Promise<Response> {
   const baseCandidates = resolveApiBaseCandidates()
-  let lastError: Error | null = null
+  let hadNetworkFailure = false
 
   for (const baseUrl of baseCandidates) {
     try {
@@ -55,12 +55,19 @@ async function postLocalAuthJson(endpoint: string, payload: object): Promise<Res
       }
 
       return response
-    } catch (networkError) {
-      lastError = networkError instanceof Error ? networkError : new Error('Unable to reach local auth server.')
+    } catch {
+      hadNetworkFailure = true
     }
   }
 
-  throw lastError ?? new Error('Unable to reach local auth server.')
+  if (hadNetworkFailure) {
+    const attemptedHosts = baseCandidates.map((baseUrl) => (baseUrl || window.location.origin)).join(', ')
+    throw new Error(
+      `Unable to reach local auth server. Start the backend API and/or set VITE_API_BASE_URL. Tried: ${attemptedHosts}`
+    )
+  }
+
+  throw new Error('Unable to reach local auth server.')
 }
 
 /**
