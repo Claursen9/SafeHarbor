@@ -21,6 +21,6 @@ public class Contribution : AuditableEntity
     public Campaign? Campaign { get; set; }
     public ContributionType? ContributionType { get; set; }
     public StatusState? StatusState { get; set; }
-
+    
     public ICollection<ContributionAllocation> Allocations { get; set; } = new List<ContributionAllocation>();
 }
