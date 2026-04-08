@@ -1050,3 +1050,23 @@ select {
   background: var(--color-secondary);
   color: var(--color-primary);
 }
+
+.brand-link {
+  transition: opacity 0.2s ease;
+}
+
+.brand-link:hover {
+  opacity: 0.8;
+}
+
+.brand {
+  /* Ensure the text color matches the logo tint */
+  color: var(--color-primary);
+  margin-bottom: 0; /* Remove any default header margins */
+  font-size: 1.4rem;
+}
+
+/* Ensure the header doesn't get too tall with the new logo */
+.nav-container {
+  padding: var(--space-2) 0;
+}

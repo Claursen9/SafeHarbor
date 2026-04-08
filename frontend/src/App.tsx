@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { CookieConsentBanner } from './components/CookieConsentBanner'
 import { useAuth } from './auth/AuthContext'
+import logo from './assets/logo.png?url';
 
 function App() {
   const { session, logout } = useAuth()
@@ -65,9 +66,23 @@ function App() {
               </span>
               <span className="sr-only">{isMenuOpen ? 'Close menu' : 'Open menu'}</span>
             </button>
-            <div className="brand" aria-label="Safe Harbor">
-              Safe Harbor
-            </div>
+            
+            {/* Added Link wrapper and Logo Image */}
+            <Link to="/" className="brand-link" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', position: 'relative', zIndex: 10 }}>
+              <img 
+                src="/favicon.png"  /* We know this file works because your tab icon works! */
+                alt="Safe Harbor Logo" 
+                style={{ 
+                  height: '38px', 
+                  width: 'auto',
+                  display: 'inline-block',
+                  /* Temporarily removed the filter to ensure it's visible */
+                }} 
+              />
+              <div className="brand" aria-label="Safe Harbor" style={{ color: '#2a5c5c' }}>
+                Safe Harbor
+              </div>
+            </Link>
           </div>
           <div className="header-actions">
             {session && (
