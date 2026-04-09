@@ -68,6 +68,7 @@ builder.Services
     .AddSignInManager();
 
 var localAuthEnabled = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("LocalAuth:Enabled");
+var useInMemoryPersistence = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("DevelopmentFeatures:UseInMemoryDataStore");
 var authBuilder = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
 if (localAuthEnabled)
@@ -128,7 +129,30 @@ builder.Services.AddCors(options =>
 // Services Registration
 builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 builder.Services.AddSingleton<IDataRetentionRedactionService, DataRetentionRedactionService>();
-builder.Services.AddSingleton<InMemoryDataStore>();
+
+if (useInMemoryPersistence)
+{
+    // NOTE: In-memory persistence is an explicit development-only fallback for demos or local debugging.
+    // Deployed environments must remain DB-backed to preserve durable data and operational consistency.
+    builder.Services.AddSingleton<InMemoryDataStore>();
+    builder.Services.AddScoped<IResidentRepository, InMemoryResidentRepository>();
+    builder.Services.AddScoped<IDonorRepository, InMemoryDonorRepository>();
+    builder.Services.AddScoped<ICampaignRepository, InMemoryCampaignRepository>();
+    builder.Services.AddScoped<IContributionRepository, InMemoryContributionRepository>();
+}
+else
+{
+    builder.Services.AddScoped<IResidentRepository, DbResidentRepository>();
+    builder.Services.AddScoped<IDonorRepository, DbDonorRepository>();
+    builder.Services.AddScoped<ICampaignRepository, DbCampaignRepository>();
+    builder.Services.AddScoped<IContributionRepository, DbContributionRepository>();
+}
+
+builder.Services.AddScoped<IResidentAdminService, ResidentAdminService>();
+builder.Services.AddScoped<IDonorAdminService, DonorAdminService>();
+builder.Services.AddScoped<IPublicRecordsService, PublicRecordsService>();
+builder.Services.AddScoped<IDonorDashboardService, DonorDashboardService>();
+builder.Services.AddScoped<IDonorAnalyticsService, DonorAnalyticsService>();
 
 // Donor impact calculator — used by DonorDashboardController to compute "girls helped" metric.
 // TO SWAP IN AN ML MODEL: replace RuleBasedImpactCalculator with your MlImpactCalculator class here.
@@ -209,11 +233,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
-// Seed the in-memory store with test donors, a campaign, and contribution history.
-// This allows the donor dashboard to render immediately without a real database.
-// See Infrastructure/DonorDashboardSeeder.cs for test credentials and amounts.
-// TODO: Remove once a real database with migration seeds is in place.
-DonorDashboardSeeder.Seed(app.Services.GetRequiredService<InMemoryDataStore>());
+if (useInMemoryPersistence)
+{
+    // Seed dev-only in-memory data only when the explicit feature flag is enabled.
+    DonorDashboardSeeder.Seed(app.Services.GetRequiredService<InMemoryDataStore>());
+}
 
 if (localAuthEnabled)
 {

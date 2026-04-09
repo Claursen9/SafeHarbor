@@ -17,9 +17,10 @@ The project follows the architecture defined in `ARCHITECTURE_DECISION_RECORD.md
 
 ## Current development data mode
 
-- **No live database is wired in the current local build.**
-- Backend endpoints currently return empty placeholder payloads for database-backed modules, and write operations return `501 Not Implemented` until persistence is connected.
-- This prevents synthetic records from being mistaken for real resident or donor data while infrastructure work is still in progress.
+- **Database-backed persistence is the default mode in all environments, including deployed app environments.**
+- Admin/public/donor controllers now resolve persistence through repository/service interfaces so domain logic is consistent whether data comes from EF Core repositories or approved development fallbacks.
+- **In-memory data is development-only and opt-in** via `DevelopmentFeatures:UseInMemoryDataStore=true` (only honored when `ASPNETCORE_ENVIRONMENT=Development`).
+- Keep the in-memory flag disabled for staging/production so operational behavior always reflects durable PostgreSQL-backed data.
 
 This repository now includes:
 
@@ -38,8 +39,8 @@ Tracked config files (`appsettings.json` and `appsettings.Development.json`) now
 
 | Source | When to use | Keys |
 |---|---|---|
-| Environment variables | CI/CD, containers, quick local overrides | `ConnectionStrings__DefaultConnection`, `LocalAuth__SigningKey`, `KeyVault__VaultUri` |
-| .NET user-secrets | Local development on trusted machines | `ConnectionStrings:DefaultConnection`, `LocalAuth:SigningKey` |
+| Environment variables | CI/CD, containers, quick local overrides | `ConnectionStrings__DefaultConnection`, `LocalAuth__SigningKey`, `KeyVault__VaultUri`, `DevelopmentFeatures__UseInMemoryDataStore` |
+| .NET user-secrets | Local development on trusted machines | `ConnectionStrings:DefaultConnection`, `LocalAuth:SigningKey`, `DevelopmentFeatures:UseInMemoryDataStore` |
 | Azure Key Vault | Shared non-local environments | `ConnectionStrings--DefaultConnection`, `LocalAuth--SigningKey` |
 
 ### Local bootstrap
