@@ -60,14 +60,19 @@ public sealed class LocalAuthController(
         }
 
         var now = DateTime.UtcNow;
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, account!.Email),
-            new Claim("preferred_username", account.Email),
-            new Claim(ClaimTypes.Role, account.Role),
-            new Claim("role", account.Role),
-            new Claim("sub", account.Email.ToLowerInvariant()),
+            new(ClaimTypes.Email, account!.Email),
+            new("preferred_username", account.Email),
+            new(ClaimTypes.Role, account.Role),
+            new("role", account.Role),
+            new("sub", account.Email.ToLowerInvariant()),
         };
+
+        // NOTE: Emit the plural "roles" claim for parity with common IdP payload shapes.
+        // Keeping both singular and plural forms prevents role-resolution drift across
+        // middleware/components when donor tokens are consumed outside local login flows.
+        claims.Add(new Claim("roles", account.Role));
 
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),

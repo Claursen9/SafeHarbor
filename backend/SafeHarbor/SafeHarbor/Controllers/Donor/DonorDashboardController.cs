@@ -18,13 +18,12 @@ namespace SafeHarbor.Controllers.Donor;
 ///   POST /api/donor/contribution              — Records a new donation for a donor.
 ///
 /// AUTHENTICATION NOTE:
-///   This endpoint now requires an authenticated principal via PolicyNames.AuthenticatedUser
-///   so donor routes no longer run anonymously.
-///   TODO: Tighten to PolicyNames.DonorOnly once Microsoft Entra ID role claims are wired.
+///   Donor routes are protected with PolicyNames.DonorOnly so only principals carrying
+///   the donor role can access personal donor data and mutations.
 /// </summary>
 [ApiController]
 [Route("api/donor")]
-[Authorize(Policy = PolicyNames.AuthenticatedUser)]
+[Authorize(Policy = PolicyNames.DonorOnly)]
 public sealed class DonorDashboardController(
     InMemoryDataStore store,
     IDonorImpactCalculator impactCalculator) : ControllerBase
