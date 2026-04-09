@@ -195,7 +195,7 @@ export function LoginPage() {
                 : ' (enabled with VITE_ENABLE_DEV_ROLE_SIMULATION=true)'}
             </p>
             <p className="caption">
-              Use seeded accounts like <strong>alice@example.com / Password123!</strong> or create your own account below.
+              Use seeded accounts like <strong>alice@example.com / Password123!Aa</strong> or create your own account below.
             </p>
 
             <form onSubmit={handleDevelopmentSubmit} className="auth-form">

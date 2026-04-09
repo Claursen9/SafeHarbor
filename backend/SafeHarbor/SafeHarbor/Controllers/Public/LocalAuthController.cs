@@ -168,7 +168,9 @@ public sealed class LocalAuthController(
     [AllowAnonymous]
     public Task<ActionResult<LoginResponse>> LocalLogin([FromBody] LoginRequest request) => Login(request);
 
-    private bool IsLocalAuthEnabled() => environment.IsDevelopment() && configuration.GetValue<bool>("LocalAuth:Enabled");
+    private bool IsLocalAuthEnabled() =>
+        (environment.IsDevelopment() && configuration.GetValue<bool>("LocalAuth:Enabled"))
+        || configuration.GetValue<bool>("LocalAuth:AllowInProduction");
 }
 
 public sealed record LoginRequest(string Email, string Password, string? Role = null);

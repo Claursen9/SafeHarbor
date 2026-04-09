@@ -68,7 +68,8 @@ builder.Services
     .AddEntityFrameworkStores<SafeHarborDbContext>()
     .AddSignInManager();
 
-var localAuthEnabled = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("LocalAuth:Enabled");
+var localAuthEnabled = (builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("LocalAuth:Enabled"))
+    || builder.Configuration.GetValue<bool>("LocalAuth:AllowInProduction");
 var useInMemoryPersistence = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("DevelopmentFeatures:UseInMemoryDataStore");
 var authBuilder = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
@@ -246,6 +247,14 @@ if (useInMemoryPersistence)
 {
     // Seed dev-only in-memory data only when the explicit feature flag is enabled.
     DonorDashboardSeeder.Seed(app.Services.GetRequiredService<InMemoryDataStore>());
+}
+
+// Apply any pending EF Core migrations automatically so the database schema stays
+// up to date without requiring a manual migration step on each deployment.
+using (var migrationScope = app.Services.CreateScope())
+{
+    var db = migrationScope.ServiceProvider.GetRequiredService<SafeHarborDbContext>();
+    await db.Database.MigrateAsync();
 }
 
 if (localAuthEnabled)
