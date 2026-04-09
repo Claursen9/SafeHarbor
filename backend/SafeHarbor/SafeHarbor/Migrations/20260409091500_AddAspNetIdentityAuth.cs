@@ -17,7 +17,7 @@ namespace SafeHarbor.Migrations
             // This migration is intentionally a no-op kept only for history continuity.
         }
 
-        protected override void _OriginalUp(MigrationBuilder migrationBuilder)
+        private static void _OriginalUp(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
