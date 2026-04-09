@@ -32,6 +32,7 @@ namespace SafeHarbor.Data
         public DbSet<Donor> Donors { get; set; } 
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<Contribution> Contributions { get; set; }
+        public DbSet<ContributionAllocation> ContributionAllocations { get; set; }
         public DbSet<SocialPostMetric> SocialPostMetrics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

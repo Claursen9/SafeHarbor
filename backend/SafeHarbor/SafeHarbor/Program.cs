@@ -7,8 +7,10 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SafeHarbor.Authorization;
 using SafeHarbor.Data; 
+using SafeHarbor.DTOs;
 using SafeHarbor.Infrastructure;
 using SafeHarbor.Services;
+using SafeHarbor.Services.Admin;
 using SafeHarbor.Services.DonorImpact;
 using SafeHarbor.Services.LocalAuth;
 
@@ -96,6 +98,11 @@ builder.Services.AddSingleton<InMemoryDataStore>();
 // TO SWAP IN AN ML MODEL: replace RuleBasedImpactCalculator with your MlImpactCalculator class here.
 // The controller and frontend are unaffected by this change.
 builder.Services.AddSingleton<IDonorImpactCalculator, RuleBasedImpactCalculator>();
+builder.Services.AddScoped<ICaseloadInventoryService, CaseloadInventoryService>();
+builder.Services.AddScoped<IProcessRecordingService, ProcessRecordingService>();
+builder.Services.AddScoped<IVisitationConferenceService, VisitationConferenceService>();
+builder.Services.AddScoped<IDonorContributionService, DonorContributionService>();
+builder.Services.AddScoped<IReportsAnalyticsService, ReportsAnalyticsService>();
 
 // NOTE: Live/ready probes support platform health checks and safer blue/green swaps.
 builder.Services.AddHealthChecks();
@@ -131,7 +138,21 @@ builder.Services.AddOpenTelemetry()
         }
     });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Keep create/update validation failures in a stable envelope shape for frontend forms.
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var firstError = context.ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault(msg => !string.IsNullOrWhiteSpace(msg))
+                ?? "Request payload validation failed.";
+
+            return new BadRequestObjectResult(new ApiErrorEnvelope("ValidationError", firstError, context.HttpContext.TraceIdentifier));
+        };
+    });
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
