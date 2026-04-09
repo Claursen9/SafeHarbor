@@ -68,6 +68,16 @@ describe('main routing guards', () => {
     cleanup()
   })
 
+  it('keeps /privacy publicly accessible for unauthenticated visitors', async () => {
+    const { container, cleanup } = await renderRoute('/privacy')
+
+    // Regression guard: GDPR policy content must stay publicly reachable from Home → Privacy.
+    expect(container.textContent).toContain('privacy-page')
+    expect(container.textContent).not.toContain('login-page')
+
+    cleanup()
+  })
+
   it('allows donors to access /donor/dashboard and blocks staff routes', async () => {
     mockSession = { email: 'alice@example.com', role: 'Donor' }
     const donorView = await renderRoute('/donor/dashboard')

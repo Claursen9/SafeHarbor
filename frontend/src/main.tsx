@@ -27,6 +27,8 @@ export const appRoutes = [
       { index: true, element: <HomePage /> },
       { path: 'impact', element: <ImpactDashboardPage /> },
       { path: 'login', element: <LoginPage /> },
+      // Keep core GDPR/privacy policy publicly accessible for all visitors.
+      { path: 'privacy', element: <PrivacyPage /> },
       // ADR authorization matrix decision:
       // keep /donor/dashboard isolated as donor-role-only, not general authenticated access.
       {
@@ -38,7 +40,6 @@ export const appRoutes = [
       {
         element: <ProtectedRoute allowedRoles={['Admin', 'SocialWorker']} />,
         children: [
-          { path: 'privacy', element: <PrivacyPage /> },
           { path: 'donate', element: <DonatePage /> },
         ],
       },

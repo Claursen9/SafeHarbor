@@ -12,7 +12,7 @@ function App() {
   // Build the navigation list based on the logged-in role.
   // - Visitors (no session): see only public pages + login link.
   // - Donors: see only their donor dashboard link (matrix keeps donor and staff areas separate).
-  // - Staff (Admin, SocialWorker): see all staff-only routes, including /privacy and /donate.
+  // - Staff (Admin, SocialWorker): see all staff-only routes, plus /donate.
   const navigation = [
     { to: '/', label: 'Home' },
     { to: '/impact', label: 'Impact Dashboard' },
@@ -140,6 +140,10 @@ function App() {
         <div className="container footer-content">
           <p>© {new Date().getFullYear()} Safe Harbor</p>
           <p>Anonymized impact insights for responsible care partnerships.</p>
+          {/* GDPR policy must remain discoverable to authenticated and non-authenticated users. */}
+          <p>
+            <Link to="/privacy">Privacy policy</Link>
+          </p>
         </div>
       </footer>
 
