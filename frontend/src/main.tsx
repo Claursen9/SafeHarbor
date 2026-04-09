@@ -36,13 +36,10 @@ export const appRoutes = [
         element: <ProtectedRoute allowedRoles={['Donor']} />,
         children: [{ path: 'dashboard', element: <YourDonationsPage /> }],
       },
-      // All non-public/non-donor routes are restricted to staff roles.
-      {
-        element: <ProtectedRoute allowedRoles={['Admin', 'SocialWorker']} />,
-        children: [
-          { path: 'donate', element: <DonatePage /> },
-        ],
-      },
+      // Donation UX decision:
+      // /donate stays public so guests can complete the "continue as guest" flow,
+      // while authenticated donors can also use the same page and post to their history.
+      { path: 'donate', element: <DonatePage /> },
       {
         path: 'app',
         // Restrict /app/* to staff roles only. Donors are redirected to / if they try to visit staff routes.

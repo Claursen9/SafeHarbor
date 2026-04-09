@@ -78,6 +78,18 @@ describe('main routing guards', () => {
     cleanup()
   })
 
+  it('keeps /donate publicly accessible for guest and donor donation flows', async () => {
+    const guestDonateView = await renderRoute('/donate')
+    expect(guestDonateView.container.textContent).toContain('donate-page')
+    expect(guestDonateView.container.textContent).not.toContain('login-page')
+    guestDonateView.cleanup()
+
+    mockSession = { email: 'alice@example.com', role: 'Donor' }
+    const donorDonateView = await renderRoute('/donate')
+    expect(donorDonateView.container.textContent).toContain('donate-page')
+    donorDonateView.cleanup()
+  })
+
   it('allows donors to access /donor/dashboard and blocks staff routes', async () => {
     mockSession = { email: 'alice@example.com', role: 'Donor' }
     const donorView = await renderRoute('/donor/dashboard')
