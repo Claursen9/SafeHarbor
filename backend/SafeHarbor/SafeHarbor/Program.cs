@@ -28,7 +28,8 @@ builder.Services.AddDbContext<SafeHarborDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 // --- DATABASE REGISTRATION END ---
 
-var localAuthEnabled = builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("LocalAuth:Enabled");
+var localAuthEnabled = (builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("LocalAuth:Enabled"))
+    || builder.Configuration.GetValue<bool>("LocalAuth:AllowInProduction");
 var authBuilder = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
 if (localAuthEnabled)

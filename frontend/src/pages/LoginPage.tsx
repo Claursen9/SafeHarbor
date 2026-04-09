@@ -13,12 +13,11 @@ type IdentityProviderState = {
 const IDENTITY_PROVIDER_CONFIGURED =
   Boolean(import.meta.env.VITE_AUTH_AUTHORIZE_URL) && Boolean(import.meta.env.VITE_AUTH_CLIENT_ID)
 
-const DEV_ROLE_SIMULATION_ENABLED =
-  import.meta.env.DEV &&
-  // Keep explicit opt-in support while also unblocking local login flows when IdP env vars are absent.
-  (import.meta.env.VITE_ENABLE_DEV_ROLE_SIMULATION === 'true' || !IDENTITY_PROVIDER_CONFIGURED)
 const AUTH_MODE = import.meta.env.VITE_AUTH_MODE ?? 'idp'
-const LOCAL_AUTH_MODE_ENABLED = import.meta.env.DEV && AUTH_MODE === 'local'
+const LOCAL_AUTH_MODE_ENABLED = AUTH_MODE === 'local'
+const DEV_ROLE_SIMULATION_ENABLED =
+  import.meta.env.VITE_ENABLE_DEV_ROLE_SIMULATION === 'true' ||
+  (!IDENTITY_PROVIDER_CONFIGURED && LOCAL_AUTH_MODE_ENABLED)
 
 function defaultDestinationForRole(role: AppRole): string {
   return role === 'Donor' ? '/donor/dashboard' : '/app/dashboard'

@@ -18,11 +18,14 @@ public sealed class LocalAuthController(
 {
     internal static readonly HashSet<string> AllowedRoles = ["Admin", "SocialWorker", "Donor"];
 
+    private bool IsLocalAuthEnabled() =>
+        (environment.IsDevelopment() && configuration.GetValue<bool>("LocalAuth:Enabled")) ||
+        configuration.GetValue<bool>("LocalAuth:AllowInProduction");
+
     [HttpPost("local-register")]
     public IActionResult LocalRegister([FromBody] LocalRegisterRequest request)
     {
-        var localAuthEnabled = environment.IsDevelopment() && configuration.GetValue<bool>("LocalAuth:Enabled");
-        if (!localAuthEnabled)
+        if (!IsLocalAuthEnabled())
         {
             return NotFound(new { error = "Local authentication is disabled." });
         }
@@ -38,11 +41,8 @@ public sealed class LocalAuthController(
     [HttpPost("local-login")]
     public ActionResult<LocalLoginResponse> LocalLogin([FromBody] LocalLoginRequest request)
     {
-        var localAuthEnabled = environment.IsDevelopment() && configuration.GetValue<bool>("LocalAuth:Enabled");
-        if (!localAuthEnabled)
+        if (!IsLocalAuthEnabled())
         {
-            // NOTE: This endpoint is intentionally disabled outside local-development auth mode
-            // so production/staging continue using external identity provider sign-in only.
             return NotFound(new { error = "Local authentication is disabled." });
         }
 
